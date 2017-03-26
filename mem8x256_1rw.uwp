@@ -1,0 +1,9 @@
+BOARD         = saed90nm
+
+TB_ENTITY     = mem8x256_1rw_tb
+TB_ARCH       = main
+TB_VHDL       = mem8x256_1rw_tb.vhd
+
+DESIGN_ENTITY = mem8x256_1rw
+DESIGN_VHDL   = mem8x256_1rw.vhd
+
