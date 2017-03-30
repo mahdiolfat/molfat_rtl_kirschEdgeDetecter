@@ -8,7 +8,6 @@ entity mem8x256_1rw is
     addr    : in  unsigned( 7 downto 0 );
     i_data  : in  std_logic_vector( 7 downto 0 );
     o_data  : out std_logic_vector( 7 downto 0 );
-    sel     : in  std_logic;
     wren    : in  std_logic
   ); 
 end;     
@@ -37,7 +36,7 @@ architecture main of mem8x256_1rw is
 
 begin
   
-  n_sel  <= not sel;
+  n_sel  <= '0';
   n_wren <= not wren;
 
   prim_ram : SRAM8x256_1rw port map
