@@ -43,47 +43,68 @@ architecture main of kirsch is
   signal r_pixel                : unsigned ( 7 downto 0 );
 
   -- convovlution table 
-  signal r1                            : unsigned ( 8 downto 0 );
-  signal r2                            : unsigned ( 8 downto 0 );
-  signal r3                            : unsigned ( 8 downto 0 );
-  signal r4                            : unsigned ( 7 downto 0 );
-  signal r5                            : unsigned ( 7 downto 0 );
-  signal r6                            : unsigned ( 7 downto 0 );
-  signal r7                            : unsigned ( 7 downto 0 );
-  signal r8                            : unsigned ( 7 downto 0 );
-  signal r9                            : unsigned ( 7 downto 0 );
-
-  signal r10                           : unsigned ( 9 downto 0 );
-  signal r11                           : unsigned ( 10 downto 0 );
-  signal r12                           : unsigned ( 11 downto 0 );
-  signal r13                           : unsigned ( 9 downto 0 );
-  signal r14                           : unsigned ( 7 downto 0 );
-  signal r15                           : unsigned ( 7 downto 0 );
-  signal r16                           : unsigned ( 7 downto 0 );
-  signal r17                           : unsigned ( 7 downto 0 );
-  signal r18                           : unsigned ( 11 downto 0 );
-  signal r19                           : unsigned ( 11 downto 0 );
-  signal r20                           : unsigned ( 12 downto 0 );
-  signal r21                           : unsigned ( 9 downto 0 );
-  signal r22                           : unsigned ( 12 downto 0 );
-  signal r23                           : unsigned ( 12 downto 0 ); 
-  signal r24                           : unsigned ( 12 downto 0 );
+  signal r1                            : unsigned ( 15 downto 0 );
+  signal r2                            : unsigned ( 15 downto 0 );
+  signal r3                            : unsigned ( 15 downto 0 );
+  signal r4                            : unsigned ( 15 downto 0 );
+  signal r5                            : unsigned ( 15 downto 0 );
+  signal r6                            : unsigned ( 15 downto 0 );
+  signal r7                            : unsigned ( 15 downto 0 );
+  signal r8                            : unsigned ( 15 downto 0 );
+  signal r9                            : unsigned ( 15 downto 0 );
+  signal r10                           : unsigned ( 15 downto 0 );
+  signal r11                           : unsigned ( 15 downto 0 );
+  signal r12                           : unsigned ( 15 downto 0 );
+  signal r13                           : unsigned ( 15 downto 0 );
+  signal r14                           : unsigned ( 15 downto 0 );
+  signal r15                           : unsigned ( 15 downto 0 );
+  signal r16                           : unsigned ( 15 downto 0 );
+  signal r17                           : unsigned ( 15 downto 0 );
+  signal r18                           : unsigned ( 15 downto 0 );
+  signal r19                           : unsigned ( 15 downto 0 );
+  signal r20                           : unsigned ( 15 downto 0 );
+  signal r21                           : unsigned ( 15 downto 0 );
+  signal r22                           : unsigned ( 15 downto 0 );
+  signal r23                           : unsigned ( 15 downto 0 ); 
+  signal r24                           : unsigned ( 15 downto 0 );
   
+  -- combinational signals for arithmetic operations
+  signal s1_src1                       : unsigned ( 15 downto 0 );
+  signal s1_src2                       : unsigned ( 15 downto 0 );
+  signal s1_src3                       : unsigned ( 15 downto 0 );
+  signal s1_src4                       : unsigned ( 15 downto 0 );
+  signal s1_add1                       : unsigned ( 15 downto 0 );
+  signal s1_add2                       : unsigned ( 15 downto 0 );
+  signal s1_out                        : unsigned ( 15 downto 0 );
+
+  signal s2_src1                       : unsigned ( 15 downto 0 );
+  signal s2_src2                       : unsigned ( 15 downto 0 );
+  signal s2_src3                       : unsigned ( 15 downto 0 );
+  signal s2_src4                       : unsigned ( 15 downto 0 );
+  signal s2_add1                       : unsigned ( 15 downto 0 );
+  signal s2_add2                       : unsigned ( 15 downto 0 );
+  signal s2_out                        : unsigned ( 15 downto 0 );
+
+  signal s3_src1                       : unsigned ( 15 downto 0 );
+  signal s3_src2                       : unsigned ( 15 downto 0 );
+  signal s3_max                        : unsigned ( 15 downto 0 );
+  signal s3_out                        : unsigned ( 15 downto 0 );
+
   -- signals for reading matrix
-  signal r_mem_idx              : unsigned ( 1 downto 0 );
+  signal r_mem_idx                     : unsigned ( 1 downto 0 );
 
   -- memory signals
-  signal  m0_addr               : unsigned( 7 downto 0 );
-  signal  m0_i_data, m0_o_data  : std_logic_vector( 7 downto 0 );
-  signal  m0_wren               : std_logic;
+  signal  m0_addr                      : unsigned( 7 downto 0 );
+  signal  m0_i_data, m0_o_data         : std_logic_vector( 7 downto 0 );
+  signal  m0_wren                      : std_logic;
 
-  signal  m1_addr               : unsigned( 7 downto 0 );
-  signal  m1_i_data, m1_o_data  : std_logic_vector( 7 downto 0 );
-  signal  m1_wren               : std_logic;
+  signal  m1_addr                      : unsigned( 7 downto 0 );
+  signal  m1_i_data, m1_o_data         : std_logic_vector( 7 downto 0 );
+  signal  m1_wren                      : std_logic;
 
-  signal  m2_addr               : unsigned( 7 downto 0 );
-  signal  m2_i_data, m2_o_data  : std_logic_vector( 7 downto 0 );
-  signal  m2_wren               : std_logic;
+  signal  m2_addr                      : unsigned( 7 downto 0 );
+  signal  m2_i_data, m2_o_data         : std_logic_vector( 7 downto 0 );
+  signal  m2_wren                      : std_logic;
 
 begin  
 
@@ -117,6 +138,143 @@ begin
       r_pixel <= i_pixel;
     end if;
   end process;
+
+  -- STAGE1
+  ---------------------------------------
+
+  -- comb: s1 comb block
+  s1_add1 <= s1_src1 + s1_src2;
+  s1_add2 <= s1_src3 + s1_src4;
+  process (reset, s1_add1, s1_add2) begin
+    if reset = '1' then
+      s1_out <= (others => '0');
+    else
+      s1_out <= s1_add1 + s1_add2;
+    end if;
+  end process;
+  
+  -- comb: s2 comb block
+  s2_add1 <= s2_src1 + s2_src2;
+  s2_add2 <= s2_src3 + s2_src4;
+  process (reset, s2_add1, s2_add2) begin
+    if reset = '1' then
+      s2_out <= (others => '0');
+    else
+      s2_out <= s2_add1 + s2_add2;
+    end if;
+  end process;
+
+  -- comb: s3 comb block
+  s3_max <= s3_src1 + s3_src2;
+  process (reset, s3_max, s2_add2) begin
+    if reset = '1' then
+      s3_out <= (others => '0');
+    else
+      s3_out <= s3_max + s2_add2;
+    end if;
+  end process;
+
+  -- reg: reg1
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r1 <= (others => '0');
+    else
+      r1 <= s1_out;
+    end if;
+  end process;
+
+  -- reg: reg2
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r2 <= (others => '0');
+    else
+      r2 <= s2_out;
+    end if;
+  end process;
+
+  -- reg: reg3
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r3 <= (others => '0');
+    else
+      r3 <= s3_out;
+    end if;
+  end process;
+
+  -- reg: reg4
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r4 <= (others => '0');
+    else
+      r4 <= (others => '0');
+    end if;
+  end process;
+
+  -- reg: reg5
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r5 <= (others => '0');
+    else
+      r5 <= (others => '0');
+    end if;
+  end process;
+
+  -- reg: reg6
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r6 <= (others => '0');
+    else
+      r6 <= (others => '0');
+    end if;
+  end process;
+
+  -- reg: reg7
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r7 <= (others => '0');
+    else
+      r7 <= (others => '0');
+    end if;
+  end process;
+
+  -- reg: reg8
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r8 <= (others => '0');
+    else
+      r8 <= (others => '0');
+    end if;
+  end process;
+
+  -- reg: reg9
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r9 <= (others => '0');
+    else
+      r9 <= (others => '0');
+    end if;
+  end process;
+
+  -- STAGE2
+  ---------------------------------------
+
+  -- STAGE3
+  ---------------------------------------
+
+  -- STAGE4
+  ---------------------------------------
+
+  -- STAGE5
+  ---------------------------------------
 
   -- instantiate 3 memory rows
   m0: entity work.mem8x256_1rw
