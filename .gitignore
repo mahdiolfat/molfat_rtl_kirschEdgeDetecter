@@ -92,6 +92,7 @@ cov*/
 transcript*
 sc_dpiheader.h
 vsim.dbg
+modelsim.ini
 
 ### SynopsysVCS ###
 # Waveform formats
