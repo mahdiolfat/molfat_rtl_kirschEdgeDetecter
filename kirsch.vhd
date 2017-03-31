@@ -58,7 +58,7 @@ architecture main of kirsch is
   signal r12                           : unsigned ( 15 downto 0 );
   signal r13                           : unsigned ( 15 downto 0 );
 
-  signal r14                           : unsigned ( 15 downto 0 );
+  signal r14                           : std_logic;
   
   -- combinational signals for arithmetic operations
   signal s1_src1                       : unsigned ( 15 downto 0 );
@@ -104,8 +104,6 @@ architecture main of kirsch is
 
   signal s8_max1                        : unsigned ( 15 downto 0 );
   signal s8_max2                        : unsigned ( 15 downto 0 );
-  signal s8_cmp                         : unsigned ( 15 downto 0 );
-
   -- signals for reading matrix
   signal r_mem_idx                     : unsigned ( 1 downto 0 );
 
@@ -121,6 +119,18 @@ architecture main of kirsch is
   signal m2_addr                      : unsigned( 7 downto 0 );
   signal m2_i_data, m2_o_data         : std_logic_vector( 7 downto 0 );
   signal m2_wren                      : std_logic;
+
+  -- TODO: should the input types be unsigned?
+  function MAX ( a : unsigned; b : unsigned )
+    return std_logic_vector
+  is
+  begin
+    if (a > b) then
+      return std_logic_vector(a);
+    else
+      return std_logic_vector(b);
+    end if;
+  end function;
 
 begin  
 
@@ -367,7 +377,6 @@ begin
   ---------------------------------------
   s8_max1 <= r11 + r12;
   s8_max2 <= s8_max1 + r13;
-  s8_cmp  <= s8_max2 + 383;
 
   -- reg: reg14
   process begin
@@ -375,11 +384,16 @@ begin
     if reset = '1' then
       r14 <= (others => '0');
     else
-      r14 <= s8_cmp;
+      if s8_max2 > 383 then
+        r14 <= '1';
+      else 
+        r14 <= '0';
+      end if;
     end if;
   end process;
 
-  o_edge <= r14;
+  -- TODO: assign this
+  -- o_edge <= r14;
   ---------------------------------------
 
 
