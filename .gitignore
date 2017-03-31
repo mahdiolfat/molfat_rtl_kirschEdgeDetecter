@@ -132,3 +132,8 @@ ucli.key
 # with declarations for C/C++ functions.
 vc_hdrs.h
 
+##############################################################################
+
+### uw stuff ###
+uw_tmp/
+
