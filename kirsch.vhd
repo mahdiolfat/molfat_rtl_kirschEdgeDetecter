@@ -16,12 +16,11 @@ entity kirsch is
     o_dir      : out direction_ty;
     o_mode     : out mode_ty;
     o_row      : out unsigned(7 downto 0);
-    o_col      : out unsigned(7 downto 0);
+    o_col      : out unsigned(7 downto 0)
   );  
 end entity;
 
 architecture main of kirsch is
-begin
 
   -- A function to rotate left (rol) a vector by n bits
   function "rol" ( a : std_logic_vector; n : natural )
@@ -104,17 +103,27 @@ begin
   end process;
 
   -- reg: row memory indices logic, includes global row counter
+  -- for i = 1 to 254 { 
+  --   for j = 1 to 254 {
+  --     for m = 0 to 2   {
+  --       for n = 0 to 2   {
+  --         table[m,n] = image[i+m-1, j+n-1];
+  --       }
+  --     }
+  --   }
+  -- }
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r_mem_i  <= (others => '0');
-      r_j  <= (others => '0');
-      r_i  <= (others => '0');
-
+      r_i      <= (others => '0');
+      r_j      <= (others => '0');
+      r_m      <= (others => '0');
+      r_n      <= (others => '0');
     elsif v(1) = '1' then 
-      if r_j = 15 then
+      if r_j = 255 then
         -- drive output if matrix has been fully read
-        if r_i =  15 then
+        if r_i =  255 then
           r_mem_i  <= (others => '0');
         else
           if r_mem_i = 2 then
@@ -138,6 +147,7 @@ begin
       m2_addr   <= (others => '0');
       m2_i_data <= (others => '0');
     elsif v(0) = '1' then
+      -- TODO: can this be optimized? 
       m0_addr   <= r_j;
       m0_i_data <= std_logic_vector(i_pixel);
       m1_addr   <= r_j;
@@ -146,6 +156,8 @@ begin
       m2_i_data <= std_logic_vector(i_pixel);
     end if;
   end process;
+
+  -- control logic for convolution pipeline
 
   -- reg: registering input data
   process begin
@@ -189,7 +201,7 @@ begin
     port map (
       clk       => clk,
       reset     => reset,
-      -- i_valid   => i_valid;
+      ppl_en    => i_valid,
       i_conv_a  => conv_a,
       i_conv_b  => conv_b,
       i_conv_c  => conv_c,
@@ -199,9 +211,10 @@ begin
       i_conv_g  => conv_g,
       i_conv_h  => conv_h,
       i_conv_i  => conv_i,
+      o_valid   => o_valid,
       o_edge    => o_edge,
-      o_dir     => o_dir,
-      o_mode    => o_mod
+      o_dir     => o_dir
     );
 
 end architecture;
+
