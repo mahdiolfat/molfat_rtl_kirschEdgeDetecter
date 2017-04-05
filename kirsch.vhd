@@ -1,3 +1,6 @@
+-- TODO:
+-- * Implement o_col, o_row, and o_mode outputs
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -43,9 +46,11 @@ architecture main of kirsch is
   signal r_pixel                       : unsigned ( 7 downto 0 );
 
   -- convolution table signals
-  signal conv_a, conv_b, conv_c,
-         conv_d, conv_e, conv_f,
-         conv_g, conv_h, conv_i        : unsigned (7 downto 0 );
+  signal conv_a0, conv_a1, conv_a2,
+         conv_b0, conv_b1, conv_b2,
+         conv_c0, conv_c1, conv_c2     : unsigned (7 downto 0 );
+
+  signal ppl_en                        : std_logic;
 
   -- memory signals
   signal m0_addr                       : unsigned( 7 downto 0 );
@@ -112,6 +117,7 @@ begin
   --     }
   --   }
   -- }
+  ppl_en <= '1' when (r_i = 2 and r_j = 2) else '0';
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
@@ -122,7 +128,7 @@ begin
       r_n      <= (others => '0');
     elsif v(1) = '1' then 
       if r_j = 255 then
-        -- drive output if matrix has been fully read
+        -- TODO: drive output if matrix has been fully read
         if r_i =  255 then
           r_mem_i  <= (others => '0');
         else
@@ -158,6 +164,36 @@ begin
   end process;
 
   -- control logic for convolution pipeline
+  -- TODO: optimize? use separate muxed signals?
+  conv_c2 <= r_pixel;
+
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      conv_a0<= (others => '0'); 
+      conv_a1<= (others => '0'); 
+      conv_a2<= (others => '0'); 
+      conv_b0<= (others => '0'); 
+      conv_b1<= (others => '0'); 
+      conv_b2<= (others => '0'); 
+      conv_c0<= (others => '0'); 
+      conv_c1<= (others => '0'); 
+    elsif v(0) = '1' then
+      if r_mem_i = 0 then
+        conv_a0 <= unsigned(m0_o_data); 
+        conv_b0 <= unsigned(m1_o_data); 
+        conv_c0 <= unsigned(m2_o_data);
+      elsif r_mem_i = 1 then
+        conv_a1 <= unsigned(m0_o_data); 
+        conv_b1 <= unsigned(m1_o_data); 
+        conv_c1 <= unsigned(m2_o_data); 
+      elsif r_mem_i = 2 then
+        conv_a2 <= unsigned(m0_o_data); 
+        conv_b2 <= unsigned(m1_o_data); 
+        conv_c2 <= unsigned(m2_o_data); 
+      end if;
+    end if;
+  end process;
 
   -- reg: registering input data
   process begin
@@ -197,20 +233,21 @@ begin
       wren      => m2_wren
     );
 
+  -- TODO: make ASCII table to show connections
   ppl: entity work.kirsch_pipeline
     port map (
       clk       => clk,
       reset     => reset,
-      ppl_en    => i_valid,
-      i_conv_a  => conv_a,
-      i_conv_b  => conv_b,
-      i_conv_c  => conv_c,
-      i_conv_d  => conv_d,
-      i_conv_e  => conv_e,
-      i_conv_f  => conv_f,
-      i_conv_g  => conv_g,
-      i_conv_h  => conv_h,
-      i_conv_i  => conv_i,
+      ppl_en    => ppl_en,
+      i_conv_a  => conv_a0,
+      i_conv_b  => conv_a1,
+      i_conv_c  => conv_a2,
+      i_conv_d  => conv_b2,
+      i_conv_e  => conv_c2,
+      i_conv_f  => conv_c1,
+      i_conv_g  => conv_c0,
+      i_conv_h  => conv_b0,
+      i_conv_i  => conv_b1,
       o_valid   => o_valid,
       o_edge    => o_edge,
       o_dir     => o_dir
