@@ -11,12 +11,118 @@ if { $gui_mode } {
     #------------------------------------------
     # signals that are traced in --prog mode
     # uncomment the lines below and 
-    # add a signal name from your lab3.vhd to the end of each line below
-    # 
-    # add wave -color "cornflower blue" -radix unsigned 
+    # add wave -color "cornflower blue" -radix unsigned
     # add wave -color "coral"           -radix decimal  
     # add wave -color "slate blue"                      
     #------------------------------------------
+
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/v  
+
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl_en
+
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_i
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_j
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_m
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_n
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_mem_i
+
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/r_pixel
+
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m0_addr
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m0_i_data
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m0_o_data
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m0_wren
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m1_addr
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m1_i_data
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m1_o_data
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m1_wren
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m2_addr
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m2_i_data
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m2_o_data
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/m2_wren
+    
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_a0
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_a1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_a2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_b0
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_b1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_b2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_c0
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_c1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/conv_c2
+
+    # pipeline signals
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/r1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/r2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/r3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/r4
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/r5
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_src1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_src2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_src3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_src4
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_add1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_add2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_add3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s1_out 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_src1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_src2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_src3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_src4
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_add1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_add2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_add3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s2_out 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s3_src1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s3_src2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s3_max 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s3_add 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s3_out 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_src1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_src2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_src3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_src4
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_add1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_add2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_max 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s4_out 
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_src1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_src2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_src3
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_src4
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_add1
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_add2
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_max
+    add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/ppl/s5_out 
+
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/r6
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/r7
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/r8
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/r9
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s6_add1 
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s6_add2 
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s6_shift
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s6_out  
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s7_shift
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s7_out  
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s8_shift
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s8_out  
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s9_shift
+    add wave -color "slate blue"      -radix unsigned sim:/kirsch_tb/uut/ppl/s9_out  
+
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/r10     
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/r11     
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s10_sub1
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s10_sub2
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s10_max 
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s10_out 
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s11_sub 
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s11_out 
+    
+    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/r12    
+    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s12_max
+    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s12_cmp
+    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s12_out
   } else {
     #------------------------------------------
     # signals that are traced in --chip and --logic mode

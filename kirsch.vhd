@@ -171,29 +171,45 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       conv_a0<= (others => '0'); 
-      conv_a1<= (others => '0'); 
-      conv_a2<= (others => '0'); 
       conv_b0<= (others => '0'); 
-      conv_b1<= (others => '0'); 
-      conv_b2<= (others => '0'); 
       conv_c0<= (others => '0'); 
-      conv_c1<= (others => '0'); 
-    elsif v(0) = '1' then
+    elsif v(1) = '1' then
       if r_mem_i = 0 then
         conv_a0 <= unsigned(m0_o_data); 
         conv_b0 <= unsigned(m1_o_data); 
         conv_c0 <= unsigned(m2_o_data);
       elsif r_mem_i = 1 then
-        conv_a1 <= unsigned(m0_o_data); 
-        conv_b1 <= unsigned(m1_o_data); 
-        conv_c1 <= unsigned(m2_o_data); 
+        conv_a0 <= unsigned(m1_o_data); 
+        conv_b0 <= unsigned(m2_o_data); 
+        conv_c0 <= unsigned(m0_o_data);
       elsif r_mem_i = 2 then
-        conv_a2 <= unsigned(m0_o_data); 
-        conv_b2 <= unsigned(m1_o_data); 
-        conv_c2 <= unsigned(m2_o_data); 
+        conv_a0 <= unsigned(m2_o_data); 
+        conv_b0 <= unsigned(m0_o_data); 
+        conv_c0 <= unsigned(m1_o_data);
       end if;
     end if;
   end process;
+
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      conv_a1 <= (others => '0');
+      conv_b1 <= (others => '0');
+      conv_c1 <= (others => '0');
+      conv_a2 <= (others => '0');
+      conv_b2 <= (others => '0');
+      conv_c2 <= (others => '0');
+    elsif v(1) = '1' then
+      conv_a1 <= conv_a0;
+      conv_b1 <= conv_b0;
+      conv_c1 <= conv_c0;
+      conv_a2 <= conv_a1;
+      conv_b2 <= conv_b1;
+      conv_c2 <= conv_c1;
+    end if;
+  -- TODO: is this covering all the cases?
+  end process;
+
 
   -- reg: registering input data
   process begin
