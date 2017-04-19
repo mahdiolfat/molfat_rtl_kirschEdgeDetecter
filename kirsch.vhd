@@ -50,8 +50,8 @@ architecture main of kirsch is
          conv_b0, conv_b1, conv_b2,
          conv_c0, conv_c1, conv_c2     : unsigned (7 downto 0 );
 
-  signal ppl_en                        : std_logic;
-
+  signal i_valid_ppl                   : std_logic;
+    
   -- memory signals
   signal m0_addr                       : unsigned( 7 downto 0 );
   signal m0_i_data, m0_o_data          : std_logic_vector( 7 downto 0 );
@@ -118,8 +118,7 @@ begin
   --     }
   --   }
   -- }
-  -- TODO: is v(1) = '1' needed?
-  ppl_en <= '1' when (r_i = 2 and r_j = 2 and v(1) = '1') else '0';
+  i_valid_ppl <= '1' when (r_i >= 2 and r_j >= 2 and v(1) = '1') else '0';
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
@@ -254,7 +253,7 @@ begin
     port map (
       clk       => clk,
       reset     => reset,
-      ppl_en    => ppl_en,
+      i_valid   => i_valid_ppl,
       i_conv_a  => conv_a0,
       i_conv_b  => conv_a1,
       i_conv_c  => conv_a2,

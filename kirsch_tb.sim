@@ -18,7 +18,7 @@ if { $gui_mode } {
 
     add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/v  
 
-    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl_en
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/i_valid_ppl
 
     add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_i
     add wave -color "cornflower blue" -radix unsigned sim:/kirsch_tb/uut/r_j

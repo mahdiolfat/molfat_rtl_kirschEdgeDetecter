@@ -9,7 +9,7 @@ entity kirsch_pipeline is
   port(
     clk        : in  std_logic;                      
     reset      : in  std_logic;                      
-    ppl_en     : in  std_logic;                 
+    i_valid    : in  std_logic;
     i_conv_a   : in  unsigned ( 7 downto 0 );
     i_conv_b   : in  unsigned ( 7 downto 0 );
     i_conv_c   : in  unsigned ( 7 downto 0 );
