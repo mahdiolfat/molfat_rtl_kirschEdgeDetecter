@@ -100,6 +100,7 @@ begin
         m1_wren <= '0'; 
         m2_wren <= '1'; 
       end if;
+    -- TODO: is the next condition needed?
     elsif v(1) = '1' then
       m0_wren <= '0'; 
       m1_wren <= '0'; 
@@ -117,13 +118,15 @@ begin
   --     }
   --   }
   -- }
-  ppl_en <= '1' when (r_i = 2 and r_j = 2) else '0';
+  -- TODO: is v(1) = '1' needed?
+  ppl_en <= '1' when (r_i = 2 and r_j = 2 and v(1) = '1') else '0';
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r_mem_i  <= (others => '0');
       r_i      <= (others => '0');
       r_j      <= (others => '0');
+      -- TODO: what to do with r_m and r_n? Are they needed?
       r_m      <= (others => '0');
       r_n      <= (others => '0');
     elsif v(1) = '1' then 
@@ -161,51 +164,48 @@ begin
       m2_addr   <= r_j;
       m2_i_data <= std_logic_vector(i_pixel);
     end if;
+    -- TODO: need an else statement here
   end process;
 
   -- control logic for convolution pipeline
   -- TODO: optimize? use separate muxed signals?
   conv_c2 <= r_pixel;
 
-  process begin
-    wait until rising_edge(clk);
+  process (reset, v, r_mem_i, m0_o_data, m1_o_data, m2_o_data) begin
     if reset = '1' then
-      conv_a0<= (others => '0'); 
-      conv_b0<= (others => '0'); 
-      conv_c0<= (others => '0'); 
+      conv_a2 <= (others => '0'); 
+      conv_b2 <= (others => '0'); 
     elsif v(1) = '1' then
       if r_mem_i = 0 then
-        conv_a0 <= unsigned(m0_o_data); 
-        conv_b0 <= unsigned(m1_o_data); 
-        conv_c0 <= unsigned(m2_o_data);
+        conv_a2 <= unsigned(m1_o_data); 
+        conv_b2 <= unsigned(m2_o_data);
       elsif r_mem_i = 1 then
-        conv_a0 <= unsigned(m1_o_data); 
-        conv_b0 <= unsigned(m2_o_data); 
-        conv_c0 <= unsigned(m0_o_data);
+        conv_a2 <= unsigned(m2_o_data); 
+        conv_b2 <= unsigned(m0_o_data);
       elsif r_mem_i = 2 then
-        conv_a0 <= unsigned(m2_o_data); 
-        conv_b0 <= unsigned(m0_o_data); 
-        conv_c0 <= unsigned(m1_o_data);
+        conv_a2 <= unsigned(m0_o_data); 
+        conv_b2 <= unsigned(m1_o_data);
       end if;
     end if;
   end process;
 
   process begin
     wait until rising_edge(clk);
+    -- could i optimize by removing reset cond.?
     if reset = '1' then
       conv_a1 <= (others => '0');
       conv_b1 <= (others => '0');
       conv_c1 <= (others => '0');
-      conv_a2 <= (others => '0');
-      conv_b2 <= (others => '0');
-      conv_c2 <= (others => '0');
-    elsif v(1) = '1' then
-      conv_a1 <= conv_a0;
-      conv_b1 <= conv_b0;
-      conv_c1 <= conv_c0;
-      conv_a2 <= conv_a1;
-      conv_b2 <= conv_b1;
-      conv_c2 <= conv_c1;
+      conv_a0 <= (others => '0');
+      conv_b0 <= (others => '0');
+      conv_c0 <= (others => '0');
+    elsif v(0) = '1' then
+      conv_a0 <= conv_a1;
+      conv_b0 <= conv_b1;
+      conv_c0 <= conv_c1;
+      conv_a1 <= conv_a2;
+      conv_b1 <= conv_b2;
+      conv_c1 <= conv_c2;
     end if;
   -- TODO: is this covering all the cases?
   end process;
