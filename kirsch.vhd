@@ -108,6 +108,18 @@ begin
     end if;
   end process;
 
+  -- TODO: drive o_mode, is everything covered?
+  process begin 
+    wait until rising_edge(clk);
+    if reset = '1' then
+      o_mode <= m_reset;
+    elsif v(0) = '1' and r_i = 0 and r_i = 0 then
+      o_mode <= m_busy;
+    else
+      o_mode <= m_idle;
+    end if;
+  end process;
+
   -- reg: row memory indices logic, includes global row counter
   -- for i = 1 to 254 { 
   --   for j = 1 to 254 {
@@ -143,6 +155,16 @@ begin
         r_i  <= r_i + 1;
       end if;
       r_j <= r_j + 1;
+    end if;
+  end process;
+
+  -- TODO: does this need to be registered?
+  -- can r_i be o_row?
+  process (reset, v, r_i) begin 
+    if reset = '1' then
+      o_row <= '0';
+    else
+      o_row <= r_i;
     end if;
   end process;
 
@@ -265,7 +287,8 @@ begin
       i_conv_i  => conv_b1,
       o_valid   => o_valid,
       o_edge    => o_edge,
-      o_dir     => o_dir
+      o_dir     => o_dir,
+      o_col     => o_col
     );
 
 end architecture;

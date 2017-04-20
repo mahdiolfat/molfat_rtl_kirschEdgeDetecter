@@ -21,8 +21,9 @@ entity kirsch_pipeline is
     i_conv_i   : in  unsigned ( 7 downto 0 );
     o_valid    : out std_logic;	                     
     o_edge     : out std_logic;	                     
-    o_dir      : out direction_ty
-  );  
+    o_dir      : out direction_ty;
+    o_col      : out unsigned ( 7 downto 0 )
+  );
 end entity;
 
 
@@ -32,6 +33,7 @@ architecture main of kirsch_pipeline is
     return std_logic_vector
   is
   begin
+    -- TODO: calculate derivatives of both 
     if (a > b) then
       return std_logic_vector(a);
     else
@@ -39,7 +41,7 @@ architecture main of kirsch_pipeline is
     end if;
   end function;
 
-  signal v                      : std_logic_vector( 0 to 3);
+  signal v                      : std_logic_vector( 0 to 3 );
 
   -- pipeline signals
 
@@ -138,16 +140,15 @@ architecture main of kirsch_pipeline is
 
 begin  
 
-  -- TODO
-  -- v(0) <= i_valid;
+  v(0) <= i_valid;
 
   -- reg: state machine
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
-      v(1 to 3) <= (others => '0');
+      v(1) <= '0';
     else
-      v(1 to 3) <= v(0 to 2);
+      v(1) <= v(0);
     end if;
   end process;
 
@@ -210,7 +211,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r1 <= (others => '0');
-    else
+    elsif v(0) = '1' then
       r1 <= s1_out;
     end if;
   end process;
@@ -220,7 +221,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r2 <= (others => '0');
-    else
+    elsif v(0) = '1' then
       r2 <= s2_out;
     end if;
   end process;
@@ -230,7 +231,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r3 <= (others => '0');
-    else
+    elsif v(0) = '1' then
       r3 <= s3_out;
     end if;
   end process;
@@ -240,7 +241,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r4 <= (others => '0');
-    else
+    elsif v(0) = '1' then
       r4 <= s4_out;
     end if;
   end process;
@@ -250,7 +251,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r5 <= (others => '0');
-    else
+    elsif v(0) = '1' then
       r5 <= s5_out;
     end if;
   end process;
@@ -268,7 +269,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r6 <= (others => '0');
-    else
+    elsif v(1) = '1' then
       r6 <= s6_out;
     end if;
   end process;
@@ -280,7 +281,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r7 <= (others => '0');
-    else
+    elsif v(1) = '1' then
       r7 <= s7_out;
     end if;
   end process;
@@ -292,7 +293,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r8 <= (others => '0');
-    else
+    elsif v(1) = '1' then
       r8 <= s8_out;
     end if;
   end process;
@@ -304,7 +305,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r9 <= (others => '0');
-    else
+    elsif v(1) = '1' then
       r9 <= s9_out;
     end if;
   end process;
@@ -321,7 +322,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r10 <= (others => '0');
-    else
+    elsif v(2) = '1' then
       r10 <= s10_out;
     end if;
   end process;
@@ -333,7 +334,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r11 <= (others => '0');
-    else
+    elsif v(2) = '1' then
       r11 <= s11_out;
     end if;
   end process;
@@ -348,7 +349,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r12 <= '0';
-    else
+    elsif v(3) = '1' then
       r12 <= s12_cmp;
     end if;
   end process;
