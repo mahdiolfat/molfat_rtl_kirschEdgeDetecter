@@ -1,3 +1,8 @@
+--
+-- TODO:
+-- * Go over all TODOs
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -29,15 +34,35 @@ end entity;
 
 architecture main of kirsch_pipeline is
   -- TODO: should the input types be unsigned?
-  function MAX ( a : unsigned; b : unsigned )
+  function MAX (a0 : unsigned;
+                a1 : unsigned;
+                d0 : direction_ty;
+                d1 : direction_ty)
     return std_logic_vector
   is
   begin
     -- TODO: calculate derivatives of both 
-    if (a > b) then
-      return std_logic_vector(a);
+    -- TODO: how can this be optimized?
+    if (a0 > a1) then
+      return std_logic_vector(d0) & std_logic_vector(a0);
+    elsif (a0 < a1) then
+      return std_logic_vector(d1) & std_logic_vector(a1);
     else
-      return std_logic_vector(b);
+      -- a0 == a1
+      case d0 is 
+        -- from highest priority to lowest priority:
+        -- W, NW, N, NE, E, SE, S, SW.
+        when dir_w  => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_nw => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_n  => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_ne => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_e  => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_se => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_s  => return std_logic_vector(d0) & std_logic_vector(a0);
+        when dir_sw => return std_logic_vector(d0) & std_logic_vector(a0);
+        -- TODO: how to handle this "other" case
+        when others => return std_logic_vector(d0) & std_logic_vector(a0);
+      end case;
     end if;
   end function;
 

@@ -1,5 +1,6 @@
 -- TODO:
 -- * Implement o_col, o_row, and o_mode outputs
+-- * Go over all TODOs
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -162,7 +163,7 @@ begin
   -- can r_i be o_row?
   process (reset, v, r_i) begin 
     if reset = '1' then
-      o_row <= '0';
+      o_row <= (others => '0');
     else
       o_row <= r_i;
     end if;
