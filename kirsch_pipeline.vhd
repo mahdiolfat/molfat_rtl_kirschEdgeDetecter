@@ -49,20 +49,39 @@ architecture main of kirsch_pipeline is
       return std_logic_vector(d1) & std_logic_vector(a1);
     else
       -- a0 == a1
-      case d0 is 
-        -- from highest priority to lowest priority:
-        -- W, NW, N, NE, E, SE, S, SW.
-        when dir_w  => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_nw => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_n  => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_ne => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_e  => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_se => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_s  => return std_logic_vector(d0) & std_logic_vector(a0);
-        when dir_sw => return std_logic_vector(d0) & std_logic_vector(a0);
-        -- TODO: how to handle this "other" case
-        when others => return std_logic_vector(d0) & std_logic_vector(a0);
-      end case;
+      if (d0 = dir_w or d1 = dir_w) then
+        return std_logic_vector(dir_w)   & std_logic_vector(a0);
+      elsif (d0 = dir_nw or d1 = dir_nw) then
+        return std_logic_vector(dir_nw)  & std_logic_vector(a0);
+      elsif (d0 = dir_n or d1 = dir_n) then
+        return std_logic_vector(dir_n)   & std_logic_vector(a0);
+      elsif (d0 = dir_ne or d1 = dir_ne) then
+        return std_logic_vector(dir_ne)  & std_logic_vector(a0);
+      elsif (d0 = dir_e or d1 = dir_e) then
+        return std_logic_vector(dir_e)   & std_logic_vector(a0);
+      elsif (d0 = dir_se or d1 = dir_se) then
+        return std_logic_vector(dir_se)  & std_logic_vector(a0);
+      elsif (d0 = dir_s or d1 = dir_s) then
+        return std_logic_vector(dir_s)   & std_logic_vector(a0);
+      else
+        return std_logic_vector(dir_sw)  & std_logic_vector(a0);
+      end if;
+
+      -- case d0 is 
+      --   -- from highest priority to lowest priority:
+      --   -- W(001), NW(100), N(010), NE(110), E(000), SE(101), S(011), SW(111)
+      --   when dir_w  => return std_logic_vector(dir_w)  & std_logic_vector(a0);
+      --   when dir_nw => return std_logic_vector(dir_nw) & std_logic_vector(a0);
+      --   when dir_n  => return std_logic_vector(dir_n)  & std_logic_vector(a0);
+      --   when dir_ne => return std_logic_vector(dir_ne) & std_logic_vector(a0);
+      --   when dir_e  => return std_logic_vector(dir_e)  & std_logic_vector(a0);
+      --   when dir_se => return std_logic_vector(dir_se) & std_logic_vector(a0);
+      --   when dir_s  => return std_logic_vector(dir_s)  & std_logic_vector(a0);
+      --   when dir_sw => return std_logic_vector(dir_sw) & std_logic_vector(a0);
+      --   -- TODO: how to handle this "others" case; should never get here
+      --   when others => return std_logic_vector(d0) & std_logic_vector(a0);
+      -- end case;
+
     end if;
   end function;
 
@@ -215,19 +234,19 @@ begin
   s2_out  <= s2_add3;
 
   -- comb: s3 comb block
-  s3_max <= b"00000000" & (s3_src1 + s3_src2);
+  s3_max <= MAX(s3_src1, s3_src2);
   s3_add <= s2_add2 + s3_max;
   s3_out <= s3_add;
 
   -- comb: s4 comb block
   s4_add1 <= b"00000000" & (s4_src1 + s4_src2); 
-  s4_max  <= b"00000000" & (s4_src3 + s4_src4);
+  s4_max  <= MAX(s4_src3, s4_src4);
   s4_add2 <= s4_add1 + s4_max; 
   s4_out  <= s4_add2;
 
   -- comb: s5 comb block
   s5_add1 <= b"00000000" & (s5_src1 + s5_src2);
-  s5_max  <= b"00000000" & (s5_src3 + s5_src4);
+  s5_max  <= MAC(s5_src3, s5_src4);
   s5_add2 <= s5_add1 + s5_max;
   s5_out  <= s5_add2;
 
@@ -340,7 +359,7 @@ begin
   
   s10_sub1 <= r7 - r6;
   s10_sub2 <= r8 - r6;
-  s10_max  <= s10_sub1 + s10_sub2;
+  s10_max  <= MAX(s10_sub1, s10_sub2);
   s10_out  <= s10_max;
   -- reg: reg10
   process begin
@@ -367,7 +386,7 @@ begin
   -- STAGE4
   ---------------------------------------
 
-  s12_max  <= r10 + r11;
+  s12_max  <= MAX(r10, r11);
   s12_cmp  <= '1'  when (s12_max > 383) else '0';
   -- reg: reg12
   process begin
