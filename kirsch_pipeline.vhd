@@ -1,6 +1,7 @@
 --
 -- TODO:
 -- * Go over all TODOs
+-- * change MAX return type to unsigned?
 
 
 library ieee;
@@ -96,6 +97,7 @@ architecture main of kirsch_pipeline is
   signal r3                            : unsigned ( 15 downto 0 );
   signal r4                            : unsigned ( 15 downto 0 );
   signal r5                            : unsigned ( 15 downto 0 );
+  signal r6                            : unsigned ( 15 downto 0 );
 
   signal s1_src1                       : unsigned ( 7 downto 0 );
   signal s1_src2                       : unsigned ( 7 downto 0 );
@@ -139,19 +141,26 @@ architecture main of kirsch_pipeline is
   signal s5_max                        : unsigned ( 15 downto 0 );
   signal s5_out                        : unsigned ( 15 downto 0 );
 
+  signal s6_src1                       : unsigned ( 7 downto 0 );
+  signal s6_src2                       : unsigned ( 7 downto 0 );
+  signal s6_src3                       : unsigned ( 7 downto 0 );
+  signal s6_src4                       : unsigned ( 7 downto 0 );
+  signal s6_add1                       : unsigned ( 15 downto 0 );
+  signal s6_add2                       : unsigned ( 15 downto 0 );
+  signal s6_max                        : unsigned ( 15 downto 0 );
+  signal s6_out                        : unsigned ( 15 downto 0 );
+
   -- STAGE2
   ---------------------------------------
-  signal r6                            : unsigned ( 15 downto 0 );
   signal r7                            : unsigned ( 15 downto 0 );
   signal r8                            : unsigned ( 15 downto 0 );
   signal r9                            : unsigned ( 15 downto 0 );
+  signal r10                           : unsigned ( 15 downto 0 );
+  signal r11                           : unsigned ( 15 downto 0 );
 
   -- combinational signals for arithmetic operations
-  signal s6_add1                       : unsigned ( 15 downto 0 );
-  signal s6_add2                       : unsigned ( 15 downto 0 );
-  signal s6_shift                      : unsigned ( 15 downto 0 );
-  signal s6_out                        : unsigned ( 15 downto 0 );
-
+  signal s7_add1                       : unsigned ( 15 downto 0 );
+  signal s7_add2                       : unsigned ( 15 downto 0 );
   signal s7_shift                      : unsigned ( 15 downto 0 );
   signal s7_out                        : unsigned ( 15 downto 0 );
 
@@ -161,26 +170,36 @@ architecture main of kirsch_pipeline is
   signal s9_shift                      : unsigned ( 15 downto 0 );
   signal s9_out                        : unsigned ( 15 downto 0 );
 
-  -- STAGE3
-  ---------------------------------------
-  signal r10                           : unsigned ( 15 downto 0 );
-  signal r11                           : unsigned ( 15 downto 0 );
-
-  signal s10_sub1                      : unsigned ( 15 downto 0 );
-  signal s10_sub2                      : unsigned ( 15 downto 0 );
-  signal s10_max                       : unsigned ( 15 downto 0 );
+  signal s10_shift                     : unsigned ( 15 downto 0 );
   signal s10_out                       : unsigned ( 15 downto 0 );
 
-  signal s11_sub                       : unsigned ( 15 downto 0 );
+  signal s11_shift                     : unsigned ( 15 downto 0 );
   signal s11_out                       : unsigned ( 15 downto 0 );
+
+  -- STAGE3
+  ---------------------------------------
+  signal r12                           : unsigned ( 15 downto 0 );
+  signal r13                           : unsigned ( 15 downto 0 );
+
+  signal s12_sub1                      : unsigned ( 15 downto 0 );
+  signal s12_sub2                      : unsigned ( 15 downto 0 );
+  signal s12_max                       : unsigned ( 15 downto 0 );
+  signal s12_out                       : unsigned ( 15 downto 0 );
+
+  signal s13_sub1                      : unsigned ( 15 downto 0 );
+  signal s13_sub2                      : unsigned ( 15 downto 0 );
+  signal s13_max                       : unsigned ( 15 downto 0 );
+  signal s13_out                       : unsigned ( 15 downto 0 );
 
   -- STAGE4
   ---------------------------------------
-  signal r12                           : std_logic;
+  signal r14                           : std_logic;
   
-  signal s12_max                       : unsigned ( 15 downto 0 );
-  signal s12_cmp                       : std_logic;
-  signal s12_out                       : std_logic;
+  signal s14_src1                      : unsigned ( 15 downto 0 );
+  signal s14_src2                      : unsigned ( 15 downto 0 );
+  signal s14_max                       : unsigned ( 15 downto 0 );
+  signal s14_cmp                       : std_logic;
+  signal s14_out                       : std_logic;
 
 begin  
 
@@ -221,6 +240,11 @@ begin
   s5_src3 <= i_conv_e;
   s5_src4 <= i_conv_h;
 
+  s6_src1 <= i_conv_h;
+  s6_src2 <= i_conv_a;
+  s6_src3 <= i_conv_g;
+  s6_src4 <= i_conv_b;
+
   -- comb: s1 comb block
   s1_add1 <= b"00000000" & (s1_src1 + s1_src2);
   s1_add2 <= b"00000000" & (s1_src3 + s1_src4);
@@ -234,21 +258,27 @@ begin
   s2_out  <= s2_add3;
 
   -- comb: s3 comb block
-  s3_max <= MAX(s3_src1, s3_src2);
+  s3_max <= unsigned(MAX(s3_src1, s3_src2, dir_n, dir_ne));
   s3_add <= s2_add2 + s3_max;
   s3_out <= s3_add;
 
   -- comb: s4 comb block
   s4_add1 <= b"00000000" & (s4_src1 + s4_src2); 
-  s4_max  <= MAX(s4_src3, s4_src4);
+  s4_max  <= unsigned(MAX(s4_src3, s4_src4, dir_e, dir_se));
   s4_add2 <= s4_add1 + s4_max; 
   s4_out  <= s4_add2;
 
   -- comb: s5 comb block
   s5_add1 <= b"00000000" & (s5_src1 + s5_src2);
-  s5_max  <= MAC(s5_src3, s5_src4);
+  s5_max  <= unsigned(MAX(s5_src3, s5_src4, dir_s, dir_sw));
   s5_add2 <= s5_add1 + s5_max;
   s5_out  <= s5_add2;
+
+  -- comb: s6 comb block
+  s6_add1 <= b"00000000" & (s6_src1 + s6_src2);
+  s6_max  <= unsigned(MAX(s6_src3, s6_src4, dir_w, dir_nw));
+  s6_add2 <= s6_add1 + s6_max;
+  s6_out  <= s6_add2;
 
   -- reg: reg1
   process begin
@@ -300,26 +330,24 @@ begin
     end if;
   end process;
 
-  -- STAGE2
-  ---------------------------------------
-
-  s6_add1  <= r1 + r2;
-  s6_shift <= s6_add1 sll 1;
-  s6_add2  <= s6_shift + s6_add1;
-  s6_out   <= s6_add2;
-
   -- reg: reg6
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r6 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v(0) = '1' then
       r6 <= s6_out;
     end if;
   end process;
 
-  s7_shift <= r3 sll 3;
-  s7_out   <= s7_shift;
+  -- STAGE2
+  ---------------------------------------
+
+  s7_add1  <= r1 + r2;
+  s7_shift <= s7_add1 sll 1;
+  s7_add2  <= s7_shift + s7_add1;
+  s7_out   <= s7_add2;
+
   -- reg: reg7
   process begin
     wait until rising_edge(clk);
@@ -330,7 +358,7 @@ begin
     end if;
   end process;
 
-  s8_shift <= r4 sll 3;
+  s8_shift <= r3 sll 3;
   s8_out   <= s8_shift;
   -- reg: reg8
   process begin
@@ -342,7 +370,7 @@ begin
     end if;
   end process;
 
-  s9_shift <= r5 sll 3;
+  s9_shift <= r4 sll 3;
   s9_out   <= s9_shift;
   -- reg: reg9
   process begin
@@ -354,52 +382,80 @@ begin
     end if;
   end process;
 
-  -- STAGE3
-  ---------------------------------------
-  
-  s10_sub1 <= r7 - r6;
-  s10_sub2 <= r8 - r6;
-  s10_max  <= MAX(s10_sub1, s10_sub2);
-  s10_out  <= s10_max;
+  s10_shift <= r5 sll 3;
+  s10_out   <= s10_shift;
   -- reg: reg10
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r10 <= (others => '0');
-    elsif v(2) = '1' then
+    elsif v(1) = '1' then
       r10 <= s10_out;
     end if;
   end process;
 
-  s11_sub  <= r9 - r6;
-  s11_out  <= s11_sub;
+  s11_shift <= r6 sll 3;
+  s11_out   <= s11_shift;
   -- reg: reg11
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r11 <= (others => '0');
-    elsif v(2) = '1' then
+    elsif v(1) = '1' then
       r11 <= s11_out;
+    end if;
+  end process;
+
+  -- STAGE3
+  ---------------------------------------
+  
+  s12_sub1 <= r8 - r7;
+  s12_sub2 <= r9 - r7;
+  s12_max  <= unsigned(MAX(s12_sub1, s12_sub2, dir_n, dir_ne));
+  s12_out  <= s12_max;
+  -- reg: reg12
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r12 <= (others => '0');
+    elsif v(2) = '1' then
+      r12 <= s12_out;
+    end if;
+  end process;
+
+  s13_sub1 <= r10 - r7;
+  s13_sub2 <= r11 - r7;
+  s13_max  <= unsigned(MAX(s13_sub1, s13_sub2, dir_s, dir_sw));
+  s13_out  <= s13_max;
+  -- reg: reg13
+  process begin
+    wait until rising_edge(clk);
+    if reset = '1' then
+      r13 <= (others => '0');
+    elsif v(2) = '1' then
+      r13 <= s13_out;
     end if;
   end process;
 
   -- STAGE4
   ---------------------------------------
 
-  s12_max  <= MAX(r10, r11);
-  s12_cmp  <= '1'  when (s12_max > 383) else '0';
-  -- reg: reg12
+  s14_src1 <= r12;
+  s14_src2 <= r13;
+  s14_max  <= unsigned(MAX(s14_src1, s14_src2, dir_n, dir_ne));
+  s14_cmp  <= '1'  when (s14_max > 383) else '0';
+  -- reg: reg14
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
-      r12 <= '0';
+      r14 <= '0';
     elsif v(3) = '1' then
-      r12 <= s12_cmp;
+      r14 <= s14_cmp;
     end if;
   end process;
 
   -- drive output 
-  o_edge <= r12;
+  o_edge <= r14;
 
 end architecture;
 
