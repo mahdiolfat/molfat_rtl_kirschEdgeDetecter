@@ -197,7 +197,7 @@ architecture main of kirsch_pipeline is
   signal s12_sub1                      : unsigned ( 15 downto 0 );
   signal s12_sub2                      : unsigned ( 15 downto 0 );
   signal s12_max                       : unsigned ( 18 downto 0 );
-  signal s12_out                       : unsigned ( 15 downto 0 );
+  --signal s12_out                       : unsigned ( 15 downto 0 );
 
   signal s13_sub1                      : unsigned ( 15 downto 0 );
   signal s13_sub2                      : unsigned ( 15 downto 0 );
@@ -265,32 +265,33 @@ begin
   s1_out  <= s1_add3;
   
   -- comb: s2 comb block
+  -- TODO:
   s2_add1 <= b"00000000" & (s2_src1 + s2_src2);
   s2_add2 <= b"00000000" & (s2_src3 + s2_src4);
   s2_add3 <= s2_add1 + s2_add2;
   s2_out  <= s2_add3;
 
   -- comb: s3 comb block
-  s3_max <= unsigned(MAX(s3_src1, s3_src2, dir_n, dir_ne));
-  s3_add <= s2_add2 + s3_max(15 downto 0);
+  s3_max <= b"00000000" & unsigned(MAX(s3_src1, s3_src2, dir_n, dir_ne));
+  s3_add <= s2_add2 + (b"00000000" & s3_max(7 downto 0));
   s3_out <= s3_add;
 
   -- comb: s4 comb block
   s4_add1 <= b"00000000" & (s4_src1 + s4_src2); 
-  s4_max  <= unsigned(MAX(s4_src3, s4_src4, dir_e, dir_se));
-  s4_add2 <= s4_add1 + s4_max(15 downto 0); 
+  s4_max  <= b"00000000" & unsigned(MAX(s4_src3, s4_src4, dir_e, dir_se));
+  s4_add2 <= s4_add1 + (b"00000000" & s4_max(7 downto 0)); 
   s4_out  <= s4_add2;
 
   -- comb: s5 comb block
   s5_add1 <= b"00000000" & (s5_src1 + s5_src2);
-  s5_max  <= unsigned(MAX(s5_src3, s5_src4, dir_s, dir_sw));
-  s5_add2 <= s5_add1 + s5_max(15 downto 0);
+  s5_max  <= b"00000000" & unsigned(MAX(s5_src3, s5_src4, dir_s, dir_sw));
+  s5_add2 <= s5_add1 + (b"00000000" & s5_max(7 downto 0));
   s5_out  <= s5_add2;
 
   -- comb: s6 comb block
   s6_add1 <= b"00000000" & (s6_src1 + s6_src2);
-  s6_max  <= unsigned(MAX(s6_src3, s6_src4, dir_w, dir_nw));
-  s6_add2 <= s6_add1 + s6_max(15 downto 0);
+  s6_max  <= b"00000000" & unsigned(MAX(s6_src3, s6_src4, dir_w, dir_nw));
+  s6_add2 <= s6_add1 + (b"00000000" & s6_max(7 downto 0));
   s6_out  <= s6_add2;
 
   -- reg: reg dir1 stage 1
