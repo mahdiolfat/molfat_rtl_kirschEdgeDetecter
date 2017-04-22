@@ -216,11 +216,15 @@ architecture main of kirsch_pipeline is
   signal s12_sub1                      : signed ( 15 downto 0 );
   signal s12_sub2                      : signed ( 15 downto 0 );
   signal s12_max                       : signed ( 18 downto 0 );
+  signal s12_maxVal                    : signed ( 15 downto 0 ); 
+  signal s12_maxDir                    : direction_ty; 
   --signal s12_out                       : unsigned ( 15 downto 0 );
 
   signal s13_sub1                      : signed ( 15 downto 0 );
   signal s13_sub2                      : signed ( 15 downto 0 );
   signal s13_max                       : signed ( 18 downto 0 );
+  signal s13_maxVal                    : signed ( 15 downto 0 ); 
+  signal s13_maxDir                    : direction_ty; 
   --signal s13_out                       : unsigned ( 15 downto 0 );
 
   -- STAGE4
@@ -529,6 +533,8 @@ begin
   s12_sub1 <= signed(r8 - r7);
   s12_sub2 <= signed(r9 - r7);
   s12_max  <= signed(MAX(s12_sub1, s12_sub2, rd1_s2, rd2_s2));
+  s12_maxVal <= s12_max(15 downto 0);
+  s12_maxDir <= direction_ty(s12_max(18 downto 16));
   -- s12_out  <= s12_max(15 downto 0);
   -- reg: reg12
   process begin
@@ -543,6 +549,8 @@ begin
   s13_sub1 <= signed(r10 - r7);
   s13_sub2 <= signed(r11 - r7);
   s13_max  <= signed(MAX(s13_sub1, s13_sub2, rd3_s2, rd4_s2));
+  s13_maxVal <= s13_max(15 downto 0);
+  s13_maxDir <= direction_ty(s13_max(18 downto 16));
   --s13_out  <= s13_max(15 downto 0);
   -- reg: reg13
   process begin
@@ -566,7 +574,7 @@ begin
   s14_maxVal <= s14_max(15 downto 0);
   s14_maxDir <= direction_ty(s14_max(18 downto 16));
 
-  s14_cmp  <= '1' when (s14_max > threshold) else '0';
+  s14_cmp  <= '1' when (s14_maxVal > 383) else '0';
 
   o_dir <= s14_maxDir when s14_cmp = '1' 
            else (others => '0');
@@ -574,12 +582,12 @@ begin
   -- reg: reg14
   process begin
     wait until rising_edge(clk);
-    if reset = '1' then
-      r14 <= '0';
-      o_valid <= '0';
-    elsif v(3) = '1' then
+    if v(3) = '1' then
       r14 <= s14_cmp;
       o_valid <= '1';
+    else 
+      r14 <= '0';
+      o_valid <= '0';
     end if;
   end process;
 

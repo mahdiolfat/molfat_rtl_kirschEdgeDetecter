@@ -6,6 +6,12 @@ if { $gui_mode } {
   add wave                 sim:/kirsch_tb/reset
   add wave                 sim:/kirsch_tb/i_valid
   add wave -radix unsigned sim:/kirsch_tb/i_pixel
+  add wave                 sim:/kirsch_tb/o_mode
+  add wave -radix unsigned sim:/kirsch_tb/o_row
+  add wave -radix unsigned sim:/kirsch_tb/o_col
+  add wave                 sim:/kirsch_tb/o_valid
+  add wave                 sim:/kirsch_tb/o_edge
+  add wave                 sim:/kirsch_tb/o_dir
 
   if { $sim_mode eq "PROG_MODE" } then {
     #------------------------------------------
@@ -148,11 +154,14 @@ if { $gui_mode } {
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s12_sub1
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s12_sub2
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s12_max 
+    add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s12_maxVal 
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s12_maxDir 
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s13_sub1
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s13_sub2
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s13_max 
+    add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/s13_maxVal 
+    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/ppl/s13_maxDir 
     
-    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/r14    
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/ppl/s14_src1
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/ppl/s14_src2
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/ppl/s14_max 
@@ -160,31 +169,22 @@ if { $gui_mode } {
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s14_maxDir 
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s14_cmp 
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s14_out 
+    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/r14    
+
+    add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/o_valid
+
   } else {
     #------------------------------------------
     # signals that are traced in --chip and --logic mode
     #------------------------------------------
   }
   
-  #------------------------------------------------------
-  # additional signals that are traced in all modes
-  #
-  
-  add wave                 sim:/kirsch_tb/o_mode
-  add wave -radix unsigned sim:/kirsch_tb/o_row
-  add wave -radix unsigned sim:/kirsch_tb/o_col
-  add wave                 sim:/kirsch_tb/o_valid
-  add wave                 sim:/kirsch_tb/o_edge
-  add wave                 sim:/kirsch_tb/o_dir
-  #------------------------------------------------------
-
 }
 #----------------------------------------------------------------------
 # code to run in both command line and gui mode
 
-#run 10.2 ms
-#run 20.8 us
-run 22 us
+run 10.2 ms
+#run 50 us
 
 #----------------------------------------------------------------------
 # if in gui mode, then zoom to see the complete simulation trace
