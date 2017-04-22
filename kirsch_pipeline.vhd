@@ -27,8 +27,7 @@ entity kirsch_pipeline is
     i_conv_i   : in  unsigned ( 7 downto 0 );
     o_valid    : out std_logic;	                     
     o_edge     : out std_logic;	                     
-    o_dir      : out direction_ty;
-    o_col      : out unsigned ( 7 downto 0 )
+    o_dir      : out direction_ty
   );
 end entity;
 
@@ -192,8 +191,8 @@ architecture main of kirsch_pipeline is
 
   -- STAGE3
   ---------------------------------------
-  signal r12                           : unsigned ( 15 downto 0 );
-  signal r13                           : unsigned ( 15 downto 0 );
+  signal r12                           : unsigned ( 18 downto 0 );
+  signal r13                           : unsigned ( 18 downto 0 );
 
   signal s12_sub1                      : unsigned ( 15 downto 0 );
   signal s12_sub2                      : unsigned ( 15 downto 0 );
@@ -203,14 +202,14 @@ architecture main of kirsch_pipeline is
   signal s13_sub1                      : unsigned ( 15 downto 0 );
   signal s13_sub2                      : unsigned ( 15 downto 0 );
   signal s13_max                       : unsigned ( 18 downto 0 );
-  signal s13_out                       : unsigned ( 15 downto 0 );
+  --signal s13_out                       : unsigned ( 15 downto 0 );
 
   -- STAGE4
   ---------------------------------------
   signal r14                           : std_logic;
   
-  signal s14_src1                      : unsigned ( 15 downto 0 );
-  signal s14_src2                      : unsigned ( 15 downto 0 );
+  signal s14_src1                      : unsigned ( 18 downto 0 );
+  signal s14_src2                      : unsigned ( 18 downto 0 );
   signal s14_max                       : unsigned ( 18 downto 0 );
   signal s14_cmp                       : std_logic;
   signal s14_out                       : std_logic;
@@ -506,28 +505,28 @@ begin
   s12_sub1 <= r8 - r7;
   s12_sub2 <= r9 - r7;
   s12_max  <= unsigned(MAX(s12_sub1, s12_sub2, rd1_s2, rd2_s2));
-  s12_out  <= s12_max(15 downto 0);
+  -- s12_out  <= s12_max(15 downto 0);
   -- reg: reg12
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r12 <= (others => '0');
     elsif v(2) = '1' then
-      r12 <= s12_out;
+      r12 <= s12_max;
     end if;
   end process;
 
   s13_sub1 <= r10 - r7;
   s13_sub2 <= r11 - r7;
   s13_max  <= unsigned(MAX(s13_sub1, s13_sub2, rd3_s2, rd4_s2));
-  s13_out  <= s13_max(15 downto 0);
+  --s13_out  <= s13_max(15 downto 0);
   -- reg: reg13
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r13 <= (others => '0');
     elsif v(2) = '1' then
-      r13 <= s13_out;
+      r13 <= s13_max;
     end if;
   end process;
 
@@ -536,15 +535,26 @@ begin
 
   s14_src1 <= r12;
   s14_src2 <= r13;
-  s14_max  <= unsigned(MAX(s14_src1, s14_src2, dir_n, dir_ne));
+
+  s14_max  <= unsigned(MAX(s14_src1(15 downto 0),  
+                           s14_src2(15 downto 0), 
+                           direction_ty(s14_src1(18 downto 16)), 
+                           direction_ty(s14_src2(18 downto 16))));
+
   s14_cmp  <= '1'  when (s14_max > threshold) else '0';
+
+  o_dir <= direction_ty(s14_max(18 downto 16)) when s14_cmp = '1' 
+           else (others => '0');
+
   -- reg: reg14
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r14 <= '0';
+      o_valid <= '0';
     elsif v(3) = '1' then
       r14 <= s14_cmp;
+      o_valid <= '1';
     end if;
   end process;
 

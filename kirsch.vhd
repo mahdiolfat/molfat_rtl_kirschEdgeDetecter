@@ -160,14 +160,8 @@ begin
   end process;
 
   -- TODO: does this need to be registered?
-  -- can r_i be o_row?
-  process (reset, v, r_i) begin 
-    if reset = '1' then
-      o_row <= (others => '0');
-    else
-      o_row <= r_i;
-    end if;
-  end process;
+  o_row <= r_i;
+  o_col <= r_j;
 
   process (reset, v, r_j, i_pixel) begin 
     if reset = '1' then
@@ -288,8 +282,7 @@ begin
       i_conv_i  => conv_b1,
       o_valid   => o_valid,
       o_edge    => o_edge,
-      o_dir     => o_dir,
-      o_col     => o_col
+      o_dir     => o_dir
     );
 
 end architecture;
