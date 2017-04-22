@@ -66,22 +66,41 @@ architecture main of kirsch_pipeline is
       else
         return std_logic_vector(dir_sw)  & std_logic_vector(a0);
       end if;
+    end if;
+  end function;
 
-      -- case d0 is 
-      --   -- from highest priority to lowest priority:
-      --   -- W(001), NW(100), N(010), NE(110), E(000), SE(101), S(011), SW(111)
-      --   when dir_w  => return std_logic_vector(dir_w)  & std_logic_vector(a0);
-      --   when dir_nw => return std_logic_vector(dir_nw) & std_logic_vector(a0);
-      --   when dir_n  => return std_logic_vector(dir_n)  & std_logic_vector(a0);
-      --   when dir_ne => return std_logic_vector(dir_ne) & std_logic_vector(a0);
-      --   when dir_e  => return std_logic_vector(dir_e)  & std_logic_vector(a0);
-      --   when dir_se => return std_logic_vector(dir_se) & std_logic_vector(a0);
-      --   when dir_s  => return std_logic_vector(dir_s)  & std_logic_vector(a0);
-      --   when dir_sw => return std_logic_vector(dir_sw) & std_logic_vector(a0);
-      --   -- TODO: how to handle this "others" case; should never get here
-      --   when others => return std_logic_vector(d0) & std_logic_vector(a0);
-      -- end case;
-
+  function MAX (a0 : signed;
+                a1 : signed;
+                d0 : direction_ty;
+                d1 : direction_ty)
+    return std_logic_vector
+  is
+  begin
+    -- TODO: calculate derivatives of both 
+    -- TODO: how can this be optimized?
+    if (a0 > a1) then
+      return std_logic_vector(d0) & std_logic_vector(a0);
+    elsif (a0 < a1) then
+      return std_logic_vector(d1) & std_logic_vector(a1);
+    else
+      -- a0 == a1
+      if (d0 = dir_w or d1 = dir_w) then
+        return std_logic_vector(dir_w)   & std_logic_vector(a0);
+      elsif (d0 = dir_nw or d1 = dir_nw) then
+        return std_logic_vector(dir_nw)  & std_logic_vector(a0);
+      elsif (d0 = dir_n or d1 = dir_n) then
+        return std_logic_vector(dir_n)   & std_logic_vector(a0);
+      elsif (d0 = dir_ne or d1 = dir_ne) then
+        return std_logic_vector(dir_ne)  & std_logic_vector(a0);
+      elsif (d0 = dir_e or d1 = dir_e) then
+        return std_logic_vector(dir_e)   & std_logic_vector(a0);
+      elsif (d0 = dir_se or d1 = dir_se) then
+        return std_logic_vector(dir_se)  & std_logic_vector(a0);
+      elsif (d0 = dir_s or d1 = dir_s) then
+        return std_logic_vector(dir_s)   & std_logic_vector(a0);
+      else
+        return std_logic_vector(dir_sw)  & std_logic_vector(a0);
+      end if;
     end if;
   end function;
 
@@ -191,26 +210,30 @@ architecture main of kirsch_pipeline is
 
   -- STAGE3
   ---------------------------------------
-  signal r12                           : unsigned ( 18 downto 0 );
-  signal r13                           : unsigned ( 18 downto 0 );
+  signal r12                           : signed ( 18 downto 0 );
+  signal r13                           : signed ( 18 downto 0 );
 
-  signal s12_sub1                      : unsigned ( 15 downto 0 );
-  signal s12_sub2                      : unsigned ( 15 downto 0 );
-  signal s12_max                       : unsigned ( 18 downto 0 );
+  signal s12_sub1                      : signed ( 15 downto 0 );
+  signal s12_sub2                      : signed ( 15 downto 0 );
+  signal s12_max                       : signed ( 18 downto 0 );
   --signal s12_out                       : unsigned ( 15 downto 0 );
 
-  signal s13_sub1                      : unsigned ( 15 downto 0 );
-  signal s13_sub2                      : unsigned ( 15 downto 0 );
-  signal s13_max                       : unsigned ( 18 downto 0 );
+  signal s13_sub1                      : signed ( 15 downto 0 );
+  signal s13_sub2                      : signed ( 15 downto 0 );
+  signal s13_max                       : signed ( 18 downto 0 );
   --signal s13_out                       : unsigned ( 15 downto 0 );
 
   -- STAGE4
   ---------------------------------------
   signal r14                           : std_logic;
   
-  signal s14_src1                      : unsigned ( 18 downto 0 );
-  signal s14_src2                      : unsigned ( 18 downto 0 );
-  signal s14_max                       : unsigned ( 18 downto 0 );
+  signal s14_src1                      : signed ( 15 downto 0 );
+  signal s14_src2                      : signed ( 15 downto 0 );
+  signal s14_src3                      : direction_ty; 
+  signal s14_src4                      : direction_ty; 
+  signal s14_max                       : signed ( 18 downto 0 );
+  signal s14_maxVal                    : signed ( 15 downto 0 ); 
+  signal s14_maxDir                    : direction_ty; 
   signal s14_cmp                       : std_logic;
   signal s14_out                       : std_logic;
 
@@ -222,9 +245,9 @@ begin
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
-      v(1) <= '0';
+      v(1 to 3) <= (others => '0');
     else
-      v(1) <= v(0);
+      v(1 to 3) <= v(0 to 2);
     end if;
   end process;
 
@@ -259,15 +282,15 @@ begin
   s6_src4 <= i_conv_b;
 
   -- comb: s1 comb block
-  s1_add1 <= b"00000000" & (s1_src1 + s1_src2);
-  s1_add2 <= b"00000000" & (s1_src3 + s1_src4);
+  s1_add1 <= (b"00000000" & s1_src1) + (b"00000000" & s1_src2);
+  s1_add2 <= (b"00000000" & s1_src3) + (b"00000000" & s1_src4);
   s1_add3 <= s1_add1 + s1_add2;
   s1_out  <= s1_add3;
   
   -- comb: s2 comb block
   -- TODO:
-  s2_add1 <= b"00000000" & (s2_src1 + s2_src2);
-  s2_add2 <= b"00000000" & (s2_src3 + s2_src4);
+  s2_add1 <= (b"00000000" & s2_src1) + (b"00000000" & s2_src2);
+  s2_add2 <= (b"00000000" & s2_src3) + (b"00000000" & s2_src4);
   s2_add3 <= s2_add1 + s2_add2;
   s2_out  <= s2_add3;
 
@@ -277,19 +300,19 @@ begin
   s3_out <= s3_add;
 
   -- comb: s4 comb block
-  s4_add1 <= b"00000000" & (s4_src1 + s4_src2); 
+  s4_add1 <= (b"00000000" & s4_src1) + (b"00000000" & s4_src2); 
   s4_max  <= b"00000000" & unsigned(MAX(s4_src3, s4_src4, dir_e, dir_se));
   s4_add2 <= s4_add1 + (b"00000000" & s4_max(7 downto 0)); 
   s4_out  <= s4_add2;
 
   -- comb: s5 comb block
-  s5_add1 <= b"00000000" & (s5_src1 + s5_src2);
+  s5_add1 <= (b"00000000" & s5_src1) + (b"00000000" & s5_src2);
   s5_max  <= b"00000000" & unsigned(MAX(s5_src3, s5_src4, dir_s, dir_sw));
   s5_add2 <= s5_add1 + (b"00000000" & s5_max(7 downto 0));
   s5_out  <= s5_add2;
 
   -- comb: s6 comb block
-  s6_add1 <= b"00000000" & (s6_src1 + s6_src2);
+  s6_add1 <= (b"00000000" & s6_src1) + (b"00000000" & s6_src2);
   s6_max  <= b"00000000" & unsigned(MAX(s6_src3, s6_src4, dir_w, dir_nw));
   s6_add2 <= s6_add1 + (b"00000000" & s6_max(7 downto 0));
   s6_out  <= s6_add2;
@@ -300,7 +323,7 @@ begin
     if reset = '1' then
       rd1_s1 <= (others => '0');
     elsif v(0) = '1' then
-      rd1_s1 <= direction_ty(s3_max(18 downto 16));
+      rd1_s1 <= direction_ty(s3_max(10 downto 8));
     end if;
   end process;
 
@@ -310,7 +333,7 @@ begin
     if reset = '1' then
       rd2_s1 <= (others => '0');
     elsif v(0) = '1' then
-      rd2_s1 <= direction_ty(s4_max(18 downto 16));
+      rd2_s1 <= direction_ty(s4_max(10 downto 8));
     end if;
   end process;
 
@@ -320,7 +343,7 @@ begin
     if reset = '1' then
       rd3_s1 <= (others => '0');
     elsif v(0) = '1' then
-      rd3_s1 <= direction_ty(s5_max(18 downto 16));
+      rd3_s1 <= direction_ty(s5_max(10 downto 8));
     end if;
   end process;
 
@@ -330,7 +353,7 @@ begin
     if reset = '1' then
       rd4_s1 <= (others => '0');
     elsif v(0) = '1' then
-      rd4_s1 <= direction_ty(s6_max(18 downto 16));
+      rd4_s1 <= direction_ty(s6_max(10 downto 8));
     end if;
   end process;
 
@@ -503,9 +526,9 @@ begin
   -- STAGE3
   ---------------------------------------
   
-  s12_sub1 <= r8 - r7;
-  s12_sub2 <= r9 - r7;
-  s12_max  <= unsigned(MAX(s12_sub1, s12_sub2, rd1_s2, rd2_s2));
+  s12_sub1 <= signed(r8 - r7);
+  s12_sub2 <= signed(r9 - r7);
+  s12_max  <= signed(MAX(s12_sub1, s12_sub2, rd1_s2, rd2_s2));
   -- s12_out  <= s12_max(15 downto 0);
   -- reg: reg12
   process begin
@@ -517,9 +540,9 @@ begin
     end if;
   end process;
 
-  s13_sub1 <= r10 - r7;
-  s13_sub2 <= r11 - r7;
-  s13_max  <= unsigned(MAX(s13_sub1, s13_sub2, rd3_s2, rd4_s2));
+  s13_sub1 <= signed(r10 - r7);
+  s13_sub2 <= signed(r11 - r7);
+  s13_max  <= signed(MAX(s13_sub1, s13_sub2, rd3_s2, rd4_s2));
   --s13_out  <= s13_max(15 downto 0);
   -- reg: reg13
   process begin
@@ -534,17 +557,18 @@ begin
   -- STAGE4
   ---------------------------------------
 
-  s14_src1 <= r12;
-  s14_src2 <= r13;
+  s14_src1 <= r12(15 downto 0);
+  s14_src2 <= r13(15 downto 0);
+  s14_src3 <= direction_ty(r12(18 downto 16));
+  s14_src4 <= direction_ty(r13(18 downto 16));
 
-  s14_max  <= unsigned(MAX(s14_src1(15 downto 0),  
-                           s14_src2(15 downto 0), 
-                           direction_ty(s14_src1(18 downto 16)), 
-                           direction_ty(s14_src2(18 downto 16))));
+  s14_max  <= signed(MAX(s14_src1, s14_src2, s14_src3, s14_src4));
+  s14_maxVal <= s14_max(15 downto 0);
+  s14_maxDir <= direction_ty(s14_max(18 downto 16));
 
-  s14_cmp  <= '1'  when (s14_max > threshold) else '0';
+  s14_cmp  <= '1' when (s14_max > threshold) else '0';
 
-  o_dir <= direction_ty(s14_max(18 downto 16)) when s14_cmp = '1' 
+  o_dir <= s14_maxDir when s14_cmp = '1' 
            else (others => '0');
 
   -- reg: reg14
