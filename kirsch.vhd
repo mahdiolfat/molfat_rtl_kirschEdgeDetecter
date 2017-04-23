@@ -34,7 +34,7 @@ architecture main of kirsch is
     return std_logic_vector( unsigned(a) rol n );
   end function;
 
-  signal v                             : std_logic_vector( 0 to 3);
+  signal v                             : std_logic_vector( 0 to 1);
   signal r_i                           : unsigned ( 7 downto 0 ); 
   signal r_j                           : unsigned ( 7 downto 0 ); 
   signal r_m                           : unsigned ( 1 downto 0 ); 
@@ -74,9 +74,9 @@ begin
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
-      v(1 to 3) <= (others => '0');
+      v(1) <= '0';
     else
-      v(1 to 3) <= v(0 to 2);
+      v(1) <= v(0);
     end if;
   end process;
 
@@ -131,7 +131,7 @@ begin
   --     }
   --   }
   -- }
-  i_valid_ppl <= '1' when (r_i >= 2 and r_j >= 2 and v(1) = '1') else '0';
+  i_valid_ppl <= '1' when (r_i >= 2 and r_j >= 2 and v(0) = '1') else '0';
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
@@ -141,7 +141,7 @@ begin
       -- TODO: what to do with r_m and r_n? Are they needed?
       r_m      <= (others => '0');
       r_n      <= (others => '0');
-    elsif v(1) = '1' then 
+    elsif v(0) = '1' then 
       if r_j = 255 then
         -- TODO: drive output if matrix has been fully read
         if r_i =  255 then
