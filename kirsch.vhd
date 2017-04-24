@@ -34,6 +34,7 @@ architecture main of kirsch is
     return std_logic_vector( unsigned(a) rol n );
   end function;
 
+  signal end_cmp                       : std_logic;
   signal v                             : std_logic_vector( 0 to 1);
   signal r_i                           : unsigned ( 7 downto 0 ); 
   signal r_j                           : unsigned ( 7 downto 0 ); 
@@ -82,11 +83,7 @@ begin
 
   -- comb: memory wren
   process (reset, v, r_mem_i) begin
-    if reset = '1' then
-        m0_wren <= '0'; 
-        m1_wren <= '0'; 
-        m2_wren <= '0'; 
-    elsif v(0) = '1' then
+    if v(0) = '1' then
       -- r_mem_i is the current row
       if r_mem_i = 0 then       -- case 1
         m0_wren <= '1'; 
@@ -102,7 +99,7 @@ begin
         m2_wren <= '1'; 
       end if;
     -- TODO: is the next condition needed?
-    elsif v(1) = '1' then
+    else
       m0_wren <= '0'; 
       m1_wren <= '0'; 
       m2_wren <= '0'; 
@@ -121,26 +118,14 @@ begin
     end if;
   end process;
 
-  -- reg: row memory indices logic, includes global row counter
-  -- for i = 1 to 254 { 
-  --   for j = 1 to 254 {
-  --     for m = 0 to 2   {
-  --       for n = 0 to 2   {
-  --         table[m,n] = image[i+m-1, j+n-1];
-  --       }
-  --     }
-  --   }
-  -- }
-  i_valid_ppl <= '1' when (r_i >= 2 and r_j >= 2 and v(0) = '1') else '0';
+  -- optimize r_i cmp
+  i_valid_ppl <= '1' when (r_i >= 2 and (r_j > 2 or r_j = 0))  else '0';
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
       r_mem_i  <= (others => '0');
       r_i      <= (others => '0');
       r_j      <= (others => '0');
-      -- TODO: what to do with r_m and r_n? Are they needed?
-      r_m      <= (others => '0');
-      r_n      <= (others => '0');
     elsif v(0) = '1' then 
       if r_j = 255 then
         -- TODO: drive output if matrix has been fully read
@@ -164,14 +149,7 @@ begin
   o_col <= r_j;
 
   process (reset, v, r_j, i_pixel) begin 
-    if reset = '1' then
-      m0_addr   <= (others => '0');
-      m0_i_data <= (others => '0');
-      m1_addr   <= (others => '0');
-      m1_i_data <= (others => '0');
-      m2_addr   <= (others => '0');
-      m2_i_data <= (others => '0');
-    elsif v(0) = '1' then
+    if v(0) = '1' then
       -- TODO: can this be optimized? 
       m0_addr   <= r_j;
       m0_i_data <= std_logic_vector(i_pixel);
@@ -179,28 +157,49 @@ begin
       m1_i_data <= std_logic_vector(i_pixel);
       m2_addr   <= r_j;
       m2_i_data <= std_logic_vector(i_pixel);
+    else
+      m0_addr   <= (others => '0');
+      m0_i_data <= (others => '0');
+      m1_addr   <= (others => '0');
+      m1_i_data <= (others => '0');
+      m2_addr   <= (others => '0');
+      m2_i_data <= (others => '0');
     end if;
-    -- TODO: need an else statement here
   end process;
 
   -- control logic for convolution pipeline
   -- TODO: optimize? use separate muxed signals?
   conv_c2 <= r_pixel;
 
+  end_cmp <= '1' when (r_i >= 2 and r_j = 0) else '0';
+
   process (reset, v, r_mem_i, m0_o_data, m1_o_data, m2_o_data) begin
     if reset = '1' then
       conv_a2 <= (others => '0'); 
       conv_b2 <= (others => '0'); 
-    elsif v(1) = '1' then
-      if r_mem_i = 0 then
-        conv_a2 <= unsigned(m1_o_data); 
-        conv_b2 <= unsigned(m2_o_data);
-      elsif r_mem_i = 1 then
-        conv_a2 <= unsigned(m2_o_data); 
-        conv_b2 <= unsigned(m0_o_data);
-      elsif r_mem_i = 2 then
-        conv_a2 <= unsigned(m0_o_data); 
-        conv_b2 <= unsigned(m1_o_data);
+    elsif v(0) = '1' then
+      if end_cmp then
+        if r_mem_i = 0 then
+          conv_a2 <= unsigned(m0_o_data); 
+          conv_b2 <= unsigned(m1_o_data);
+        elsif r_mem_i = 1 then
+          conv_a2 <= unsigned(m1_o_data); 
+          conv_b2 <= unsigned(m2_o_data);
+        elsif r_mem_i = 2 then
+          conv_a2 <= unsigned(m2_o_data); 
+          conv_b2 <= unsigned(m0_o_data);
+        end if;
+      else 
+        if r_mem_i = 0 then
+          conv_a2 <= unsigned(m1_o_data); 
+          conv_b2 <= unsigned(m2_o_data);
+        elsif r_mem_i = 1 then
+          conv_a2 <= unsigned(m2_o_data); 
+          conv_b2 <= unsigned(m0_o_data);
+        elsif r_mem_i = 2 then
+          conv_a2 <= unsigned(m0_o_data); 
+          conv_b2 <= unsigned(m1_o_data);
+        end if;
       end if;
     end if;
   end process;

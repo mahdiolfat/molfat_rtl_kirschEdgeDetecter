@@ -168,7 +168,6 @@ if { $gui_mode } {
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/ppl/s14_maxVal
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s14_maxDir 
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s14_cmp 
-    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/s14_out 
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/ppl/r14    
 
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/ppl/o_valid

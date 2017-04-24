@@ -239,7 +239,6 @@ architecture main of kirsch_pipeline is
   signal s14_maxVal                    : signed ( 15 downto 0 ); 
   signal s14_maxDir                    : direction_ty; 
   signal s14_cmp                       : std_logic;
-  signal s14_out                       : std_logic;
 
 begin  
 
@@ -576,18 +575,21 @@ begin
 
   s14_cmp  <= '1' when (s14_maxVal > 383) else '0';
 
-  o_dir <= s14_maxDir when s14_cmp = '1' 
-           else (others => '0');
-
   -- reg: reg14
   process begin
     wait until rising_edge(clk);
     if v(3) = '1' then
       r14 <= s14_cmp;
       o_valid <= '1';
+      if (s14_cmp = '1') then
+        o_dir <= s14_maxDir;
+      else 
+        o_dir <= (others => '0');
+      end if;
     else 
       r14 <= '0';
       o_valid <= '0';
+      o_dir <= (others => '0');
     end if;
   end process;
 
