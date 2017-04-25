@@ -1,4 +1,4 @@
-LIB_VHDL      = util.vhd kirsch_synth_pkg.vhd
+LIB_VHDL      = util.vhd kirsch_synth_pkg.vhd kirsch_pipeline.vhd mem8x256_1rw.vhd
 
 TB_ENTITY     =  kirsch_tb
 TB_ARCH       =  main
@@ -6,7 +6,7 @@ TB_VHDL       =  string_pkg.vhd kirsch_unsynth_pkg.vhd kirsch_tb.vhd
 
 DESIGN_ENTITY =  kirsch
 DESIGN_ARCH   =  main
-DESIGN_VHDL   =  kirsch.vhd kirsch_pipeline.vhd mem8x256_1rw.vhd 
+DESIGN_VHDL   =  mem8x256_1rw.vhd kirsch_pipeline.vhd
 
 SIM_SCRIPT    = kirsch_tb.sim
 
