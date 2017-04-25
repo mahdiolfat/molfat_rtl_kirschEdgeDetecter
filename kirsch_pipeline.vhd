@@ -103,7 +103,7 @@ architecture main of kirsch_pipeline is
     end if;
   end function;
 
-  signal v                      : std_logic_vector( 0 to 3 );
+  signal v_ppl                      : std_logic_vector( 0 to 3 );
 
   -- pipeline signals
 
@@ -241,15 +241,15 @@ architecture main of kirsch_pipeline is
 
 begin  
 
-  v(0) <= i_valid;
+  v_ppl(0) <= i_valid;
 
   -- reg: state machine
   process begin
     wait until rising_edge(clk);
     if reset = '1' then
-      v(1 to 3) <= (others => '0');
+      v_ppl(1 to 3) <= (others => '0');
     else
-      v(1 to 3) <= v(0 to 2);
+      v_ppl(1 to 3) <= v_ppl(0 to 2);
     end if;
   end process;
 
@@ -324,7 +324,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd1_s1 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       rd1_s1 <= direction_ty(s3_max(10 downto 8));
     end if;
   end process;
@@ -334,7 +334,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd2_s1 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       rd2_s1 <= direction_ty(s4_max(10 downto 8));
     end if;
   end process;
@@ -344,7 +344,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd3_s1 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       rd3_s1 <= direction_ty(s5_max(10 downto 8));
     end if;
   end process;
@@ -354,7 +354,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd4_s1 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       rd4_s1 <= direction_ty(s6_max(10 downto 8));
     end if;
   end process;
@@ -364,7 +364,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r1 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       r1 <= s1_out;
     end if;
   end process;
@@ -374,7 +374,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r2 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       r2 <= s2_out;
     end if;
   end process;
@@ -384,7 +384,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r3 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       r3 <= s3_out;
     end if;
   end process;
@@ -394,7 +394,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r4 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       r4 <= s4_out;
     end if;
   end process;
@@ -404,7 +404,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r5 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       r5 <= s5_out;
     end if;
   end process;
@@ -414,7 +414,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r6 <= (others => '0');
-    elsif v(0) = '1' then
+    elsif v_ppl(0) = '1' then
       r6 <= s6_out;
     end if;
   end process;
@@ -427,7 +427,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd1_s2 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       rd1_s2 <= rd1_s1;
     end if;
   end process;
@@ -437,7 +437,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd2_s2 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       rd2_s2 <= rd2_s1;
     end if;
   end process;
@@ -447,7 +447,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd3_s2 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       rd3_s2 <= rd3_s1;
     end if;
   end process;
@@ -457,7 +457,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       rd4_s2 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       rd4_s2 <= rd4_s1;
     end if;
   end process;
@@ -472,7 +472,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r7 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       r7 <= s7_out;
     end if;
   end process;
@@ -484,7 +484,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r8 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       r8 <= s8_out;
     end if;
   end process;
@@ -496,7 +496,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r9 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       r9 <= s9_out;
     end if;
   end process;
@@ -508,7 +508,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r10 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       r10 <= s10_out;
     end if;
   end process;
@@ -520,7 +520,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r11 <= (others => '0');
-    elsif v(1) = '1' then
+    elsif v_ppl(1) = '1' then
       r11 <= s11_out;
     end if;
   end process;
@@ -539,7 +539,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r12 <= (others => '0');
-    elsif v(2) = '1' then
+    elsif v_ppl(2) = '1' then
       r12 <= s12_max;
     end if;
   end process;
@@ -555,7 +555,7 @@ begin
     wait until rising_edge(clk);
     if reset = '1' then
       r13 <= (others => '0');
-    elsif v(2) = '1' then
+    elsif v_ppl(2) = '1' then
       r13 <= s13_max;
     end if;
   end process;
@@ -577,7 +577,7 @@ begin
   -- reg: reg14
   process begin
     wait until rising_edge(clk);
-    if v(3) = '1' then
+    if v_ppl(3) = '1' then
       r14 <= s14_cmp;
       o_valid <= '1';
       if (s14_cmp = '1') then
