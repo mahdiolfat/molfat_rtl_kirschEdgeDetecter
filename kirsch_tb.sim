@@ -155,19 +155,13 @@ if { $gui_mode } {
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s12_sub1
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s12_sub2
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s12_max 
-    add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s12_maxVal 
-    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/s12_maxDir 
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s13_sub1
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s13_sub2
     add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s13_max 
-    add wave -color "coral"           -radix signed sim:/kirsch_tb/uut/s13_maxVal 
-    add wave -color "coral"           -radix unsigned sim:/kirsch_tb/uut/s13_maxDir 
     
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/s14_src1
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/s14_src2
     add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/s14_max 
-    add wave -color "blue2"           -radix signed sim:/kirsch_tb/uut/s14_maxVal
-    add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/s14_maxDir 
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/s14_cmp 
     add wave -color "blue2"           -radix unsigned sim:/kirsch_tb/uut/r14    
 
