@@ -1,4 +1,4 @@
-LIB_VHDL      = util.vhd kirsch_synth_pkg.vhd
+LIB_VHDL      = util.vhd kirsch_synth_pkg.vhd mem8x256_1rw.vhd
 
 TB_ENTITY     = kirsch_tb
 TB_ARCH       = main
