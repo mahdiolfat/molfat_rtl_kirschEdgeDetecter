@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity mem8x256_1rw is
   port (
     clk     : in  std_logic;
-    addr    : in  unsigned( 7 downto 0 );
+    addr    : in  std_logic_vector( 7 downto 0 );
     i_data  : in  std_logic_vector( 7 downto 0 );
     o_data  : out std_logic_vector( 7 downto 0 );
     wren    : in  std_logic
@@ -40,7 +40,7 @@ begin
   n_wren <= not wren;
 
   prim_ram : SRAM8x256_1rw port map
-    (a   => std_logic_vector( addr ),
+    (a   => addr,
      ce  => clk,
      web => n_wren,
      oeb => c0,

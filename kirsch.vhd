@@ -43,20 +43,20 @@ architecture main of kirsch is
   -- convolution table signals
   signal conv_a, conv_b, conv_c,
          conv_h, conv_i, conv_d,
-         conv_g, conv_f, conv_e     : unsigned (7 downto 0 );
+         conv_g, conv_f, conv_e        : unsigned (7 downto 0 );
 
   signal i_valid_ppl                   : std_logic;
     
   -- memory signals
-  signal m0_addr                       : unsigned( 7 downto 0 );
+  signal m0_addr                       : std_logic_vector( 7 downto 0 );
   signal m0_i_data, m0_o_data          : std_logic_vector( 7 downto 0 );
   signal m0_wren                       : std_logic;
 
-  signal m1_addr                       : unsigned( 7 downto 0 );
+  signal m1_addr                       : std_logic_vector( 7 downto 0 );
   signal m1_i_data, m1_o_data          : std_logic_vector( 7 downto 0 );
   signal m1_wren                       : std_logic;
 
-  signal m2_addr                       : unsigned( 7 downto 0 );
+  signal m2_addr                       : std_logic_vector( 7 downto 0 );
   signal m2_i_data, m2_o_data          : std_logic_vector( 7 downto 0 );
   signal m2_wren                       : std_logic;
 
@@ -336,11 +336,11 @@ begin
   process (reset, v, r_j, i_pixel) begin 
     if v = '1' then
       -- TODO: can this be optimized? 
-      m0_addr   <= r_j;
+      m0_addr   <= std_logic_vector(r_j);
       m0_i_data <= std_logic_vector(i_pixel);
-      m1_addr   <= r_j;
+      m1_addr   <= std_logic_vector(r_j);
       m1_i_data <= std_logic_vector(i_pixel);
-      m2_addr   <= r_j;
+      m2_addr   <= std_logic_vector(r_j);
       m2_i_data <= std_logic_vector(i_pixel);
     else
       m0_addr   <= (others => '0');

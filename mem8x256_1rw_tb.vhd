@@ -122,7 +122,7 @@ begin
   uut: entity work.mem8x256_1rw
     port map (
       clk      => clk,
-      addr     => addr,
+      addr     => std_logic_vector(addr),
       i_data   => i_data,
       o_data   => o_data,
       wren     => wren
